@@ -3,6 +3,7 @@ const request = require('supertest')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
+const endpointJSON = require('../endpoints.json')
 
 beforeEach(() => {
     return seed(data)
@@ -13,6 +14,7 @@ afterAll(() => {
 })
 
 const endpoints = [
+    '/',
     '/nonexistent',
     '/api/nonexistent',
     '/api/topics/nonexistent'
@@ -45,6 +47,19 @@ describe('/api/topics', () => {
                     description: expect.any(String)
                 })
             })
+        })
+    })
+})
+
+describe('/api', () => {
+    test('Responds with an object of all apis', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response) => {
+            const { endpoints } = response.body;
+        expect(endpoints).toEqual(endpointJSON);
+        expect(endpoints).toMatchObject(endpointJSON);
         })
     })
 })
