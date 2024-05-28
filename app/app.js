@@ -1,12 +1,14 @@
 const express = require('express')
 
-const {getTopics, getApis} = require('./controllers/controller')
+const {getTopics, getApis, getArticleById} = require('./controllers/controller')
 
 const app = express()
 
 app.get('/api/topics', getTopics)
 
 app.get('/api', getApis)
+
+app.get('/api/articles/:article_id', getArticleById)
 
 
 // 404 Middleware

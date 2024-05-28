@@ -17,7 +17,8 @@ const endpoints = [
     '/',
     '/nonexistent',
     '/api/nonexistent',
-    '/api/topics/nonexistent'
+    '/api/topics/nonexistent',
+    '/api/articles/99999'
 ]
 
 describe('404: Not Found', () => {
@@ -60,6 +61,35 @@ describe('/api', () => {
             const { endpoints } = response.body;
         expect(endpoints).toEqual(endpointJSON);
         expect(endpoints).toMatchObject(endpointJSON);
+        })
+    })
+})
+
+describe('/api/articles/:article_id', () => {
+    test('Responds with an article object', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({body}) => {
+           const {article} = body
+           expect(article).toMatchObject({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: expect.any(String),
+            votes: 100,
+            article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+           })
+        })
+    })
+    test('Returns an error 400 if an invalid type of id is passed', () => {
+        return request(app)
+        .get('/api/articles/one')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.error.message).toBe('Bad Request: Invalid article id')
         })
     })
 })
