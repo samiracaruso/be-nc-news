@@ -2,18 +2,13 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api",
     "queries": [],
-    "exampleResponse": {"GET /api": {
-      "description": "serves up a json representation of all the available endpoints of the api",
+    "exampleResponse": {
+      "GET /api": {
+      "description": "",
       "queries": [],
       "exampleResponse": {}
-    },
-    "GET /api/topics": {
-      "description": "serves an array of all topics",
-      "queries": [],
-      "exampleResponse": {
-        "topics": [{ "slug": "football", "description": "Footie!" }]
       }
-    }}
+    }
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
@@ -37,6 +32,20 @@
           "comment_count": 6
         }
       ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "Returns an article object with the requested article id",
+    "queries": [],
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "A",
+      "author": "icellusedkars",
+      "body": "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
+      "topic": "mitch",
+      "created_at": 1579126860000,
+      "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "votes": 3
     }
   }
 }
