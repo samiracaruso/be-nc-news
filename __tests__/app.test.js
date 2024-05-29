@@ -93,3 +93,28 @@ describe('/api/articles/:article_id', () => {
         })
     })
 })
+
+describe('/api/articles', () => {
+    test('Responds with an array of articles with a comment count', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const {articles} = body
+            console.log(articles)
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSorted('created_at', {descending: true})
+            articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String)
+                })
+            })
+        })
+    })
+})
