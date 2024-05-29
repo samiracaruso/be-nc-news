@@ -1,8 +1,10 @@
 const express = require('express')
 
-const {getTopics, getApis, getArticleById, getArticles, getComments} = require('./controllers/controller')
+const {getTopics, getApis, getArticleById, getArticles, getComments, addComment} = require('./controllers/controller')
 
 const app = express()
+
+app.use(express.json())
 
 app.get('/api/topics', getTopics)
 
@@ -13,6 +15,8 @@ app.get('/api/articles/:article_id', getArticleById)
 app.get('/api/articles', getArticles)
 
 app.get('/api/articles/:article_id/comments', getComments)
+
+app.post('/api/articles/:article_id/comments', addComment)
 
 
 // 404 Middleware
