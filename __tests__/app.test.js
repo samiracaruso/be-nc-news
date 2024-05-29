@@ -32,7 +32,7 @@ describe('404: Not Found', () => {
     })
 })
 
-describe('/api/topics', () => {
+describe('GET /api/topics', () => {
     test('Responds with an array of all topics', () => {
         return request(app)
         .get('/api/topics')
@@ -50,7 +50,7 @@ describe('/api/topics', () => {
     })
 })
 
-describe('/api', () => {
+describe('GET /api', () => {
     test('Responds with an object of all apis', () => {
         return request(app)
         .get('/api')
@@ -63,7 +63,7 @@ describe('/api', () => {
     })
 })
 
-describe('/api/articles/:article_id', () => {
+describe('GET /api/articles/:article_id', () => {
     test('Responds with an article object', () => {
         return request(app)
         .get('/api/articles/1')
@@ -92,7 +92,7 @@ describe('/api/articles/:article_id', () => {
     })
 })
 
-describe('/api/articles', () => {
+describe('GET /api/articles', () => {
     test('Responds with an array of articles with a comment count', () => {
         return request(app)
         .get('/api/articles')
@@ -116,7 +116,7 @@ describe('/api/articles', () => {
     })
 })
 
-describe('/api/articles/:article_id/comments', () => {
+describe('GET /api/articles/:article_id/comments', () => {
     test('Reponds with an array with all comments relative to the article', () => {
         return request(app)
         .get('/api/articles/1/comments')
@@ -154,4 +154,46 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.error.message).toBe('Bad Request: Invalid article id')
         })
     })
+})
+
+describe('POST /api/articles/:article_id/comments',() => {
+test('Returns the posted comment', () => {
+    const newComment = {
+        username: 'lurker',
+        body: 'This is where the fun begins!'
+    }
+    return request(app)
+    .post('/api/articles/3/comments')
+    .send(newComment)
+    .expect(201)
+    .then(({body}) => {
+        const {comment} = body
+        expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            body: 'This is where the fun begins!',
+            article_id: 3,
+            author: 'lurker',
+            votes: 0,
+            created_at: expect.any(String)
+        })
+    })
+})
+test('Responds with an error 400 for an invalid id type', () => {
+    return request(app)
+    .post('/api/articles/one/comments')
+    .send({username: 'lurker', body: 'This is where the fun begins!'})
+    .expect(400)
+    .then(({body}) => {
+        expect(body.error.message).toBe('Bad Request: Invalid article id')
+    })
+})
+test('Responds with an error 404 for a nonexistent id', () => {
+    return request(app)
+    .post('/api/articles/99999/comments')
+    .send({username: 'lurker', body: 'This is where the fun begins!'})
+    .expect(404)
+    .then(({body}) => {
+        expect(body.error.message).toBe('Page Not Found')
+    })
+})
 })
