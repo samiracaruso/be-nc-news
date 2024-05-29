@@ -14,11 +14,9 @@ afterAll(() => {
 })
 
 const endpoints = [
-    '/',
-    '/nonexistent',
-    '/api/nonexistent',
-    '/api/topics/nonexistent',
-    '/api/articles/99999'
+    '/api/topics/cooking',
+    '/api/articles/99999',
+    '/api/articles/99999/comments'
 ]
 
 describe('404: Not Found', () => {
@@ -101,7 +99,6 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const {articles} = body
-            console.log(articles)
             expect(articles).toHaveLength(13)
             expect(articles).toBeSorted('created_at', {descending: true})
             articles.forEach((article) => {
@@ -115,6 +112,46 @@ describe('/api/articles', () => {
                     article_img_url: expect.any(String)
                 })
             })
+        })
+    })
+})
+
+describe('/api/articles/:article_id/comments', () => {
+    test('Reponds with an array with all comments relative to the article', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            const {comments} = body
+            expect(comments).toHaveLength(11)
+            expect(comments).toBeSorted('created_at', {descending: true})
+            comments.forEach((comment) => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String)
+                })
+            })
+        })
+    })
+    test('Responds with an empty array if there are no comments', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            const {comments} = body
+            expect(comments).toHaveLength(0)
+        })
+    })
+    test('Responds with an error 400 for an invalid id type', () => {
+        return request(app)
+        .get('/api/articles/one')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.error.message).toBe('Bad Request: Invalid article id')
         })
     })
 })
