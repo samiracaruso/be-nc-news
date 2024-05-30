@@ -11,6 +11,17 @@ WHERE article_id = $1;`, [article_id])
 })
 }
 
+exports.doesUsernameExist = (username) => {
+return db.query(`SELECT * FROM users
+WHERE username = $1`, [username])
+.then((response) => {
+    if (response.rows.length === 0){
+        return Promise.reject({status: 401, message: 'Invalid Username'})
+    }
+    return username
+})
+}
+
 exports.selectComments = (article_id) => {
 return db.query(`SELECT * FROM comments
 WHERE article_id = $1
@@ -20,8 +31,7 @@ ORDER BY created_at DESC;`, [article_id])
 })
 }
 
-exports.insertComment = (newComment, article_id) => {
-const {username, body} = newComment
+exports.insertComment = (username, body, article_id) => {
 return db.query(`INSERT INTO comments (author, body, article_id)
 VALUES ($1, $2, $3)
 RETURNING *;`, [username, body, article_id])
