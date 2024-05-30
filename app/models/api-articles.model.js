@@ -1,18 +1,21 @@
-const db = require('../../db/connection')
+const db = require("../../db/connection");
+const { doesTopicExist } = require("./api-topics.model");
 
 exports.selectArticleById = (article_id) => {
-
-    return db.query('SELECT * FROM articles where article_id = $1;', [article_id])
+  return db
+    .query("SELECT * FROM articles where article_id = $1;", [article_id])
     .then((response) => {
-        if (response.rows.length === 0){
-            return Promise.reject({status: 404, message: 'Page Not Found'})
-        }
-        return response.rows[0]
-    })
-}
+      if (response.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "Page Not Found" });
+      }
+      return response.rows[0];
+    });
+};
 
-exports.selectArticles = () => {
-    return db.query(`SELECT 
+exports.selectArticles = async (topic) => {
+  const queryValues = [];
+
+  let sqlQuery = `SELECT 
     a.author,
     a.title,
     a.article_id,
@@ -21,35 +24,49 @@ exports.selectArticles = () => {
     a.votes,
     a.article_img_url,
     COUNT(c.comment_id) AS comment_count
-FROM 
+    FROM 
     articles a
-LEFT JOIN 
-    comments c ON a.article_id = c.article_id
-GROUP BY 
-    a.author,
-    a.title,
-    a.article_id,
-    a.topic,
-    a.created_at,
-    a.votes,
-    a.article_img_url
-ORDER BY 
-    a.created_at DESC;`)
-    .then((response) => {
-        return response.rows
-    })
-}
+    LEFT JOIN 
+    comments c ON a.article_id = c.article_id`;
 
-exports.patchArticleById = (inc_votes, article_id) => {
-    if (isNaN(inc_votes) || !Number.isInteger(Number(inc_votes))){
-        return Promise.reject({status: 400, message: 'Bad Request: Invalid inc_votes data'})
+    if (topic) {
+        await doesTopicExist(topic);
+        sqlQuery += ` WHERE a.topic = $1`;
+        queryValues.push(topic);
     }
 
-    return db.query(`UPDATE articles
+  sqlQuery += ` GROUP BY 
+a.author,
+a.title,
+a.article_id,
+a.topic,
+a.created_at,
+a.votes,
+a.article_img_url
+ORDER BY 
+a.created_at DESC;`;
+
+const response = await db.query(sqlQuery, queryValues);
+return response.rows;
+};
+
+exports.patchArticleById = (inc_votes, article_id) => {
+  if (isNaN(inc_votes) || !Number.isInteger(Number(inc_votes))) {
+    return Promise.reject({
+      status: 400,
+      message: "Bad Request: Invalid inc_votes data",
+    });
+  }
+
+  return db
+    .query(
+      `UPDATE articles
     SET votes = $1
     WHERE article_id = $2
-    RETURNING *`, [inc_votes, article_id])
+    RETURNING *`,
+      [inc_votes, article_id]
+    )
     .then((response) => {
-        return response.rows[0]
-    })
-}
+      return response.rows[0];
+    });
+};
