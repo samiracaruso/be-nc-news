@@ -156,7 +156,7 @@ describe('GET /api/articles/:article_id/comments', () => {
     })
 })
 
-describe('POST /api/articles/:article_id/comments',() => {
+describe.only('POST /api/articles/:article_id/comments',() => {
 test('Returns the posted comment', () => {
     const newComment = {
         username: 'lurker',
@@ -194,6 +194,15 @@ test('Responds with an error 404 for a nonexistent id', () => {
     .expect(404)
     .then(({body}) => {
         expect(body.error.message).toBe('Page Not Found')
+    })
+})
+test('Responds with an error 401 for an invalid username', () => {
+    return request(app)
+    .post('/api/articles/4/comments')
+    .send({username: 'anon123', body: 'No idea what I am doing'})
+    .expect(401)
+    .then(({body}) => {
+        expect(body.error.message).toBe('Invalid Username')
     })
 })
 })
