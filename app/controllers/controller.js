@@ -1,7 +1,7 @@
 const {selectTopics} = require('../models/api-topics.model')
 const {selectArticleById, selectArticles, patchArticleById} = require('../models/api-articles.model')
 const endpoints = require('../../endpoints.json')
-const { doesArticleExist, selectComments, insertComment, doesUsernameExist } = require('../models/api-comments.model')
+const { doesArticleExist, selectComments, insertComment, doesUsernameExist, removeComment } = require('../models/api-comments.model')
 
 exports.getTopics = (req, res, next) => {
     selectTopics()
@@ -91,6 +91,18 @@ exports.updateArticleById = (req, res, next) => {
     })
     .then((article) => {
         res.status(200).send({article})
+    })
+    .catch(next)
+}
+
+exports.deleteComment = (req, res, next) => {
+    const {comment_id} = req.params
+    if (isNaN(comment_id) || !Number.isInteger(Number(comment_id)) || Number(comment_id) <= 0) {
+        return next({ status: 400, message: 'Bad Request: Invalid comment id' });
+    }
+    removeComment(comment_id)
+    .then(() => {
+        res.status(204).end()
     })
     .catch(next)
 }
