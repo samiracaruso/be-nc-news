@@ -1,6 +1,6 @@
 const express = require('express')
 
-const {getTopics, getApis, getArticleById, getArticles, getComments, addComment} = require('./controllers/controller')
+const {getTopics, getApis, getArticleById, getArticles, getComments, addComment, updateArticleById} = require('./controllers/controller')
 
 const app = express()
 
@@ -17,6 +17,8 @@ app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id/comments', getComments)
 
 app.post('/api/articles/:article_id/comments', addComment)
+
+app.patch('/api/articles/:article_id', updateArticleById)
 
 
 // 404 Middleware

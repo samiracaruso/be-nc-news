@@ -39,3 +39,4 @@ RETURNING *;`, [username, body, article_id])
     return rows[0]
 })
 }
+

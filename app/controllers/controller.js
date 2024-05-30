@@ -1,5 +1,5 @@
 const {selectTopics} = require('../models/api-topics.model')
-const {selectArticleById, selectArticles} = require('../models/api-articles.model')
+const {selectArticleById, selectArticles, patchArticleById} = require('../models/api-articles.model')
 const endpoints = require('../../endpoints.json')
 const { doesArticleExist, selectComments, insertComment, doesUsernameExist } = require('../models/api-comments.model')
 
@@ -15,6 +15,12 @@ exports.getTopics = (req, res, next) => {
 
 exports.getApis = (req, res, next) => {
     res.status(200).send({ endpoints })
+}
+
+isArticleIdValid = (article_id) => {
+    if (isNaN(article_id) || !Number.isInteger(Number(article_id)) || Number(article_id) <= 0) {
+        return next({ status: 400, message: 'Bad Request: Invalid article id' });
+    }
 }
 
 exports.getArticleById = (req, res, next) => {
@@ -69,6 +75,22 @@ exports.addComment = (req, res, next) => {
     })
     .then((comment) => {
         res.status(201).send({comment})
+    })
+    .catch(next)
+}
+
+exports.updateArticleById = (req, res, next) => {
+    const {article_id} = req.params
+    const {inc_votes} = req.body
+    if (isNaN(article_id) || !Number.isInteger(Number(article_id)) || Number(article_id) <= 0) {
+        return next({ status: 400, message: 'Bad Request: Invalid article id' });
+    }
+    doesArticleExist(article_id)
+    .then(() => {
+        return patchArticleById(inc_votes, article_id)
+    })
+    .then((article) => {
+        res.status(200).send({article})
     })
     .catch(next)
 }

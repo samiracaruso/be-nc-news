@@ -39,3 +39,17 @@ ORDER BY
         return response.rows
     })
 }
+
+exports.patchArticleById = (inc_votes, article_id) => {
+    if (isNaN(inc_votes) || !Number.isInteger(Number(inc_votes))){
+        return Promise.reject({status: 400, message: 'Bad Request: Invalid inc_votes data'})
+    }
+
+    return db.query(`UPDATE articles
+    SET votes = $1
+    WHERE article_id = $2
+    RETURNING *`, [inc_votes, article_id])
+    .then((response) => {
+        return response.rows[0]
+    })
+}

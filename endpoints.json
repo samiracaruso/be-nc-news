@@ -71,5 +71,19 @@
       "votes": 0,
       "created_at": "2020-01-01T03:08:00.000Z"
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates the number of votes and responds with the updated article",
+    "queries": [],
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "A",
+      "author": "icellusedkars",
+      "body": "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
+      "topic": "mitch",
+      "created_at": 1579126860000,
+      "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "votes": 3
+    }
   }
 }
