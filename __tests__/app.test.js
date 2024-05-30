@@ -156,7 +156,7 @@ describe('GET /api/articles/:article_id/comments', () => {
     })
 })
 
-describe.only('POST /api/articles/:article_id/comments',() => {
+describe('POST /api/articles/:article_id/comments',() => {
 test('Returns the posted comment', () => {
     const newComment = {
         username: 'lurker',
@@ -205,4 +205,57 @@ test('Responds with an error 401 for an invalid username', () => {
         expect(body.error.message).toBe('Invalid Username')
     })
 })
+})
+
+describe('PATCH /api/articles/:article_id', () => {
+    test('Responds with the updated article', () => {
+        const votes = {inc_votes: 1}
+        return request(app)
+        .patch('/api/articles/2')
+        .send(votes)
+        .expect(200)
+        .then(({body}) => {
+           const {article} = body
+           expect(article).toMatchObject({
+            article_id: 2,
+            title: 'Sony Vaio; or, The Laptop',
+            topic: 'mitch',
+            author: 'icellusedkars',
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 1,
+            article_img_url: expect.any(String)
+           })
+        })
+    })
+    test('Responds with a 404 if the article does not exist', () => {
+        const votes = {inc_votes: 1}
+        return request(app)
+        .patch('/api/articles/999999')
+        .send(votes)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.error.message).toBe('Page Not Found')
+        })
+    })
+    test('Responds with a 400 if the article id type is invalid', () => {
+        const votes = {inc_votes: 1}
+        return request(app)
+        .patch('/api/articles/seven')
+        .send(votes)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.error.message).toBe('Bad Request: Invalid article id')
+        })
+    })
+    test('Responds with a 400 if the inc_votes data type is invalid', () => {
+        const votes = {inc_votes: 'one'}
+        return request(app)
+        .patch('/api/articles/3')
+        .send(votes)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.error.message).toBe('Bad Request: Invalid inc_votes data')
+        })
+    })
 })
