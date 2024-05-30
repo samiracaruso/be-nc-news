@@ -115,6 +115,32 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test('Responds with an array of articles matching the provided topic', () => {
+    return request(app)
+    .get('/api/articles?topic=cats')
+    .expect(200)
+    .then(({body}) => {
+        const {articles} = body
+        expect(articles).toHaveLength(1)
+    })
+  })
+  test('Responds with a 404 if the topic does not exist', () => {
+    return request(app)
+    .get('/api/articles?topic=gardening')
+    .expect(404)
+    .then(({body}) => {
+        expect(body.error.message).toBe('Topic Not Found')
+    })
+  })
+  test('Responds with an empty array if there are no articles with the specified topic', () => {
+    return request(app)
+    .get('/api/articles?topic=paper')
+    .expect(200)
+    .then(({body}) => {
+        const {articles} = body
+        expect(articles).toEqual([])
+    })
+  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {

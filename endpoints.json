@@ -90,5 +90,14 @@
     "description": "Deletes the requested comment and returns a 204",
     "queries": [],
     "exampleResponse": {}
+  },
+  "GET /api/users": {
+    "description": "Responds with an array containing all user objects",
+    "queries": [],
+    "exampleResponse": {
+      "username": "butter_bridge",
+      "name": "jonny",
+      "avatar_url": "http://example.com"
+    }
   }
 }
