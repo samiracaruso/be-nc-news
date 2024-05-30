@@ -2,6 +2,7 @@ const {selectTopics} = require('../models/api-topics.model')
 const {selectArticleById, selectArticles, patchArticleById} = require('../models/api-articles.model')
 const endpoints = require('../../endpoints.json')
 const { doesArticleExist, selectComments, insertComment, doesUsernameExist, removeComment } = require('../models/api-comments.model')
+const { selectUsers } = require('../models/api-users.model')
 
 exports.getTopics = (req, res, next) => {
     selectTopics()
@@ -105,4 +106,11 @@ exports.deleteComment = (req, res, next) => {
         res.status(204).end()
     })
     .catch(next)
+}
+
+exports.getUsers = (req, res, next) => {
+selectUsers()
+.then((users) => {
+    res.status(200).send({users})
+})
 }

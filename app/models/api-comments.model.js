@@ -52,11 +52,4 @@ exports.removeComment = (comment_id) => {
             RETURNING *`, [comment_id])
         }
     })
-    // .then(() => {
-    //     return db.query(`SELECT * FROM comments
-    //     WHERE comment_id = $1`, [comment_id])
-    // })
-    // .then((response) => {
-    //     console.log(response.rows)
-    // })
     }
